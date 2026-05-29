@@ -134,7 +134,7 @@ textarea.form-input { min-height: 100px; resize: vertical; }
     <div class="status-dot"><div class="dot"></div><span>Online</span></div>
   </div>
 </nav>
-<div id="api-bar">
+<div id="api-bar" style="display:none">
   <label>API Key</label>
   <input type="password" id="api-key-input" placeholder="sk-proj-... 여기에 붙여넣으세요" />
   <button id="save-key-btn">저장</button>
@@ -235,7 +235,7 @@ let manualItems = JSON.parse(localStorage.getItem('hotel_manual') || 'null') || 
 ];
 
 let logs = JSON.parse(localStorage.getItem('hotel_logs') || '[]');
-let apiKey = localStorage.getItem('openai_api_key') || '';
+let apiKey = 'sk-proj-8Y_U7GQ208ogVMKOgKR0Agww5c7m52s_IbKmrPRFJBwQBKKJMZ0HZHbAMFDsjMZXoTh88hnqT3BlbkFJJQ3Aa7v6g10pOWVHKhlmF8nFIh8n5w7EBQ8f5igBwWZZCf0OHvqxZeXvh3hJlW7v3lXpMxYoQA';
 let conversationHistory = [];
 let isLoading = false;
 let editingId = null;
@@ -247,7 +247,7 @@ const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 const chatArea = document.getElementById('chat-area');
 
-if (apiKey) { apiKeyInput.value = apiKey; sendBtn.disabled = false; saveKeyBtn.textContent = '✓ 저장됨'; }
+sendBtn.disabled = false;
 saveKeyBtn.addEventListener('click', () => {
   const key = apiKeyInput.value.trim(); if (!key) return;
   apiKey = key; localStorage.setItem('openai_api_key', key);
