@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hotel Front Desk Training Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0e0c; --surface: #1a1814; --surface2: #222018; --border: #2e2b24;
+  --gold: #c9a84c; --gold-light: #e8c97a; --gold-dim: #7a6530;
+  --text: #f0ebe0; --text-muted: #8a8070;
+  --user-bubble: #1e2535; --ai-bubble: #1a1814;
+  --green: #4caf7a; --red: #e07070; --blue: #7aa0d4;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+nav { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; flex-shrink: 0; }
+.nav-logo { display: flex; align-items: center; gap: 10px; padding: 16px 0; margin-right: 24px; }
+.logo-mark { width: 32px; height: 32px; border: 1.5px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; color: var(--gold); font-size: 14px; }
+.nav-logo h1 { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--text); }
+.nav-logo p { font-size: 10px; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; }
+.nav-tabs { display: flex; flex: 1; }
+.nav-tab { padding: 18px 20px; font-size: 13px; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+.nav-tab:hover { color: var(--text); }
+.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.nav-right { margin-left: auto; display: flex; align-items: center; }
+.status-dot { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px #4caf7a88; animation: pulse 2.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+#api-bar { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 8px 24px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+#api-bar label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+#api-key-input { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; color: var(--text-muted); font-size: 12px; font-family: monospace; outline: none; transition: border-color 0.2s; }
+#api-key-input:focus { border-color: var(--gold-dim); }
+#save-key-btn { background: var(--gold-dim); color: var(--text); border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+#save-key-btn:hover { background: var(--gold); color: #000; }
+.page { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+.page.active { display: flex; }
+#chat-area { flex: 1; overflow-y: auto; padding: 24px 24px 12px; display: flex; flex-direction: column; gap: 18px; scroll-behavior: smooth; }
+#chat-area::-webkit-scrollbar { width: 4px; }
+#chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.welcome { text-align: center; padding: 36px 20px; opacity: 0; animation: fadeUp 0.6s ease forwards; }
+.welcome-icon { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--gold); margin-bottom: 14px; }
+.welcome h2 { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 8px; }
+.welcome p { font-size: 13px; color: var(--text-muted); line-height: 1.7; max-width: 360px; margin: 0 auto 20px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+.chip:hover { border-color: var(--gold-dim); color: var(--gold-light); }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.message { display: flex; gap: 10px; opacity: 0; animation: fadeUp 0.35s ease forwards; max-width: 740px; }
+.message.user { align-self: flex-end; flex-direction: row-reverse; }
+.message.assistant { align-self: flex-start; }
+.avatar { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: 'DM Serif Display', serif; }
+.message.user .avatar { background: var(--user-bubble); border: 1px solid #2e3a50; color: var(--blue); }
+.message.assistant .avatar { background: var(--surface2); border: 1px solid var(--border); color: var(--gold); }
+.bubble { padding: 11px 15px; border-radius: 12px; font-size: 14px; line-height: 1.7; max-width: calc(100% - 42px); }
+.message.user .bubble { background: var(--user-bubble); border: 1px solid #2e3a50; border-radius: 12px 4px 12px 12px; }
+.message.assistant .bubble { background: var(--ai-bubble); border: 1px solid var(--border); border-radius: 4px 12px 12px 12px; }
+.bubble strong { color: var(--gold-light); font-weight: 500; }
+.bubble ul { padding-left: 18px; margin: 4px 0; }
+.bubble li { margin-bottom: 3px; }
+.feedback-row { display: flex; gap: 8px; margin-top: 8px; padding-left: 42px; align-items: center; }
+.fb-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
+.fb-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+.typing-dots { display: flex; gap: 5px; align-items: center; padding: 4px 0; }
+.typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--gold-dim); animation: bounce 1.2s ease-in-out infinite; }
+.typing-dots span:nth-child(2){animation-delay:0.2s} .typing-dots span:nth-child(3){animation-delay:0.4s}
+@keyframes bounce { 0%,80%,100%{transform:translateY(0);opacity:0.4} 40%{transform:translateY(-5px);opacity:1} }
+#input-area { padding: 14px 24px 18px; border-top: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+.input-wrapper { display: flex; align-items: flex-end; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 9px 9px 9px 15px; transition: border-color 0.2s; }
+.input-wrapper:focus-within { border-color: var(--gold-dim); }
+#user-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; resize: none; max-height: 120px; line-height: 1.5; }
+#user-input::placeholder { color: var(--text-muted); }
+#send-btn { width: 34px; height: 34px; border-radius: 8px; border: none; background: var(--gold-dim); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+#send-btn:hover:not(:disabled) { background: var(--gold); color: #000; }
+#send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+#send-btn svg { width: 15px; height: 15px; }
+.input-hint { font-size: 11px; color: var(--text-muted); margin-top: 7px; text-align: center; }
+.error-msg { background: #2a1515; border: 1px solid #5a2020; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--red); align-self: center; max-width: 500px; text-align: center; }
+#stats-page { overflow-y: auto; padding: 28px; gap: 20px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.stat-card .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.stat-card .value { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--gold); }
+.section-title { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); margin-bottom: 14px; }
+.question-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.q-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
+.q-rank { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--gold-dim); min-width: 24px; }
+.q-text { flex: 1; font-size: 13px; color: var(--text); }
+.q-count { font-size: 12px; color: var(--text-muted); background: var(--surface2); padding: 3px 10px; border-radius: 20px; }
+.q-tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; }
+.q-tag.helpful { background: #1a2e1a; color: var(--green); border: 1px solid #2a4a2a; }
+.q-tag.unhelpful { background: #2a1515; color: var(--red); border: 1px solid #4a2020; }
+.unanswered-list { display: flex; flex-direction: column; gap: 8px; }
+.u-item { background: var(--surface); border: 1px solid #3a2020; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 10px; }
+.u-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.empty-state { text-align: center; padding: 40px; color: var(--text-muted); font-size: 13px; }
+#manual-page { overflow-y: auto; padding: 28px; gap: 0; }
+.manual-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.manual-header h2 { font-family: 'DM Serif Display', serif; font-size: 18px; }
+.btn-primary { background: var(--gold-dim); color: var(--text); border: none; border-radius: 8px; padding: 9px 18px; font-size: 13px; cursor: pointer; transition: background 0.2s; }
+.btn-primary:hover { background: var(--gold); color: #000; }
+.btn-danger { background: #3a1515; color: var(--red); border: 1px solid #5a2020; border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; }
+.btn-edit { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; }
+.manual-items { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.manual-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; align-items: flex-start; gap: 12px; }
+.manual-item-content { flex: 1; }
+.manual-item-title { font-size: 13px; font-weight: 500; color: var(--gold-light); margin-bottom: 4px; }
+.manual-item-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; white-space: pre-wrap; }
+.manual-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.add-form { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.add-form h3 { font-size: 14px; color: var(--text); margin-bottom: 14px; }
+.form-group { margin-bottom: 12px; }
+.form-group label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 6px; }
+.form-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s; }
+.form-input:focus { border-color: var(--gold-dim); }
+textarea.form-input { min-height: 100px; resize: vertical; }
+.form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+.btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">
+    <div class="logo-mark">H</div>
+    <div><h1>Front Desk Training</h1><p>Ibis Styles Ambassador Gangnam</p></div>
+  </div>
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="showPage('chat', this)">💬 챗봇</div>
+    <div class="nav-tab" onclick="showPage('stats', this)">📊 통계 & 분석</div>
+    <div class="nav-tab" onclick="showPage('manual', this)">📋 매뉴얼 관리</div>
+  </div>
+  <div class="nav-right">
+    <div class="status-dot"><div class="dot"></div><span>Online</span></div>
+  </div>
+</nav>
+<div id="api-bar">
+  <label>API Key</label>
+  <input type="password" id="api-key-input" placeholder="sk-proj-... 여기에 붙여넣으세요" />
+  <button id="save-key-btn">저장</button>
+</div>
+<div id="chat-page" class="page active">
+  <div id="chat-area">
+    <div class="welcome" id="welcome-msg">
+      <div class="welcome-icon">✦</div>
+      <h2>무엇이든 물어보세요</h2>
+      <p>호텔 프론트 업무에 관한 질문을 한국어 또는 영어로 입력하세요.<br>매뉴얼 기반으로 안내해드립니다.</p>
+      <div class="chips">
+        <div class="chip" onclick="sendChip(this.textContent)">객실 배정 기준이 뭔가요?</div>
+        <div class="chip" onclick="sendChip(this.textContent)">체크인/아웃 시간은?</div>
+        <div class="chip" onclick="sendChip(this.textContent)">주차 요금 어떻게 돼요?</div>
+        <div class="chip" onclick="sendChip(this.textContent)">How do I assign rooms?</div>
+      </div>
+    </div>
+  </div>
+  <div id="input-area">
+    <div class="input-wrapper">
+      <textarea id="user-input" placeholder="질문을 입력하세요 / Type your question..." rows="1"></textarea>
+      <button id="send-btn" onclick="sendMessage()" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+    <p class="input-hint">Enter로 전송 · Shift+Enter로 줄바꿈</p>
+  </div>
+</div>
+<div id="stats-page" class="page">
+  <div class="stats-grid" id="stats-grid"></div>
+  <div class="section-title">자주 묻는 질문 TOP 10</div>
+  <div class="question-list" id="top-questions"></div>
+  <div class="section-title">미해결 질문 (매뉴얼 보완 필요)</div>
+  <div class="unanswered-list" id="unanswered-list"></div>
+</div>
+<div id="manual-page" class="page">
+  <div class="manual-header">
+    <h2>매뉴얼 항목 관리</h2>
+    <button class="btn-primary" onclick="toggleAddForm()">+ 항목 추가</button>
+  </div>
+  <div class="manual-items" id="manual-items"></div>
+  <div class="add-form" id="add-form" style="display:none">
+    <h3 id="form-title">새 항목 추가</h3>
+    <div class="form-group"><label>항목 제목</label><input type="text" class="form-input" id="item-title" placeholder="예: 얼리 체크인 정책"></div>
+    <div class="form-group"><label>내용</label><textarea class="form-input" id="item-content" placeholder="내용을 입력하세요..."></textarea></div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="toggleAddForm()">취소</button>
+      <button class="btn-primary" onclick="saveManualItem()">저장</button>
+    </div>
+  </div>
+</div>
+<script>
+let manualItems = JSON.parse(localStorage.getItem('hotel_manual') || 'null') || [
+  { id: 1, title: '객실 배정 기준', content: `- 포스코 사옥 뷰 (17~24호 라인): 전망이 좋은 방향. 좋은 뷰를 원하는 고객에게 배정.\n- 포스코 아파트 뷰 (1~10호): 조용한 환경을 선호하는 고객에게 배정.\n- 롯데 아파트 뷰 (11~15호): 조용한 환경을 선호하는 고객에게 배정.\n- 대로변: 양지이나 소음이 심함. 소음에 민감한 고객에게는 배정 지양.\n- 엘리베이터 근처 객실 (5, 6, 19, 20호): 이동이 편리한 위치를 원하는 고객에게 배정.\n- 엘리베이터에서 먼 객실 (1, 2, 9~16, 23~27호 라인): 조용한 위치를 원하는 고객에게 적합.\n- 장애인용 객실 (휠체어 이용 가능): 410호, 510호.` },
+  { id: 2, title: '주차 요금 안내', content: `- 객실 투숙객: 무료 최대 2시간 / 이후 10분당 1,000원 / 1일 최대 10,000원\n- 레스토랑 이용객: 무료 최대 3시간 / 이후 10분당 2,000원 / 1일 최대 48,000원\n- 외부 고객: 최초 15분 무료 / 이후 10분당 2,000원 / 1일 최대 48,000원\n- 정산 위치: 주차장 출구 및 B2F, B3F 정산기\n- 위치: B2, B3, B4` },
+  { id: 3, title: 'Accor 멤버십 무료 주차', content: `- Silver 등급 이상 멤버는 주차 무료 제공\n- 단, 다이렉트 예약(accor.com, ALL앱 등)에 한해서만 적용\n- 써드파티 예약(익스피디아, 부킹닷컴, 아고다 등)은 멤버십 등급 무관하게 무료 주차 미적용` },
+  { id: 4, title: '아코르 플러스 멤버십 혜택 (ISAG)', content: `(2026년 6월 1일 시행)\n- 객실: 2박 연속 이용 시 1박 무료 쿠폰 적용 (변경 없음)\n- 식음 할인: 전 식음 업장 음식 30% 할인 / 음료 15% 할인 일괄 적용` },
+  { id: 5, title: '기본 호텔 정보', content: `- 호텔명: 이비스 스타일 앰배서더 서울 강남\n- 주소: 서울특별시 강남구 삼성로 431\n- 전화: 02-3011-8888 / 객실 문의: 02-3454-1101 또는 객실 내 '0번'\n- 이메일: styleg@ambatel.com\n- 와이파이: ibis_seoul_wifi / 비밀번호: ibis1234` },
+  { id: 6, title: '체크인 / 체크아웃', content: `- 체크인: 오후 2시 (14:00)\n- 체크아웃: 낮 12시 (12:00)` },
+  { id: 7, title: '2F 프레쉬 365 다이닝 & 르 바', content: `- 조식: 07:00~10:00 (마지막 입장 09:50)\n  - 사전 예약: 22,000원 / 현장 결제: 29,000원\n  - 아동(48개월~초등학생): 15,400원\n  - 성인 결제 시 동반 만 12세 이하 자녀 1인 무료 (객실당 1인)\n  - 선결제 시 취소 및 날짜 변경 불가\n- 런치: 12:00~14:30 (투숙객 15% 할인)\n  - 주중: 성인 46,000원 / 아동 32,000원\n  - 주말·공휴일: 성인 54,000원 / 아동 37,000원\n- 르 바: 07:00~15:00 (라스트 오더 14:30) (투숙객 15% 할인)` },
+  { id: 8, title: '층별 시설 안내', content: `- 15F: 가든 라운지 (전자레인지·정수기 / 05:00~00:00)\n- 2F: 프레쉬 365 다이닝 / 르 바 / PDR\n- 1F: 로비 / 프론트 / 르 카페 / 비즈니스 코너 / 배달 픽업존 (24시간)\n- B1F: CU 편의점(24시, 심야무인 01:00~06:00) / 코인 런드리(24시) / 헬스장 / 모노플렉스(시네마) / 미팅룸(06:00~익일 01:00)` },
+  { id: 9, title: '이용 규정', content: `- 객실 정비: 오후 3시까지 진행. 요청 시 사전 연락 필요\n- 전 객실 금연. 흡연 시 과태료 200,000원 부과\n- 키 분실 시 11,000원 청구\n- 면도기 3,000원 / 칫약·칫솔 1,000원 유상 판매\n- 여성용품(생리대) 및 헤어캡은 프론트 데스크 문의\n- 크롬캐스트: 프론트 데스크 선착순 대여 (보증금 필요)\n- 넷플릭스: 패키지 상품으로 운영` },
+  { id: 10, title: 'EHP 냉난방기 사용법', content: `전원 버튼: 화면 왼쪽 하단\n온도 조절: 화면 오른쪽 UP(올리기) / DOWN(내리기) 버튼\nFAN 풍속: 약, 중, 강 세 단계 선택 가능\n설정온도와 현재온도가 화면에 표시됨\n\n조작 순서\n1. 전원 버튼 터치하여 휀(FAN)이 도는지 확인\n   ⚠️ 반드시 객실 카드키를 꽂은 상태에서만 버튼이 동작함\n2. UP 버튼으로 온도 올리기 / DOWN 버튼으로 온도 내리기\n3. 온도 설정값에 따라 풍속이 약, 중, 강으로 자동 변화\n\n화면 바탕색으로 냉방/난방 상태 확인\n- 청색: 냉방 상태 → DOWN 버튼을 계속 터치하면 냉방 전환되며 청색으로 변함\n- 적색: 난방 상태 → UP 버튼을 계속 터치하면 난방 전환되며 적색으로 변함\n\n온도를 내렸는데 시원해지지 않는다는 컴플레인 시 확인사항\n- 화면이 적색(난방)인지 확인. 난방 상태에서는 온도를 내려도 냉방으로 전환되지 않음\n- DOWN 버튼을 계속 눌러 화면이 청색으로 바뀌는지 확인\n- 카드키가 꽂혀 있는지 확인` },
+  { id: 11, title: '여행사별 결제 방법', content: `결제 완료 (VCC)\n- Expedia.com\n- Booking.com VCC\n- Agoda Company Pte Ltd\n- Ctrip International\n- Hotelbeds Spain S.L.U.\n- Webbeds FZ LLC\n- Expedia Lodging\n- Dida Travel\n- Tripbtoz\n\n현장 결제\n- Booking.com B.V. (B.V.로 표기된 경우 현장결제)\n- Ctrip Flagship\n- 기타 여행사: Payment Instructions 확인 후 VCC 없으면 현장결제 확률 높음\n\n결제 완료 (RT)\n- Hotelnow: RT 9010\n- Hoteltime: RT 9009\n\n현장 또는 입금 혼용\n- Rakuten Travel: 반드시 Note 또는 Trace 확인 후 처리` },
+  { id: 12, title: '입금 포스팅 처리 방법 (Bank Transfer / 뱅크 트랜스퍼 / 뱅트)', content: `처리 순서\n1. 재경에서 입금 내역 메일 수신\n2. 유관 부서에서 해당 입금이 어떤 예약 건인지 확인 후 프론트에 포스팅 요청\n3. 프론트 포스팅 완료 후 회신\n\n체크인 완료된 예약건\n1. 해당 예약 Billing 창 진입\n2. Post Payment 클릭\n3. Method → Bank Transfer 선택\n4. Amount에 입금액 입력\n5. Reference 또는 Supplement에 입금 날짜 및 특이사항 기재\n\n체크인 전인 예약건\n1. 해당 예약건 진입\n2. Deposit / Cancellation 클릭\n3. Deposit 란 우측 점 세 개 아이콘 클릭\n4. Post Unallocated Deposit 클릭\n5. Method → Bank Transfer 선택\n6. Amount에 입금액 입력\n7. Reference 또는 Supplement에 입금 날짜 및 특이사항 기재` },
+  { id: 13, title: 'PM방 생성 방법', content: `객실 예약건과 별개로 리베이트, 미팅룸 대관료 선결제 등 처리 중인 Balance가 있을 경우 PM방을 만들어 관리.\n\n1. 오페라 첫 화면 → Bookings 탭 클릭\n2. Reservations 클릭\n3. House Posting Account 클릭\n4. 단체명 또는 고객명 입력 후 Save\n\n⚠️ 주의: Rate Code는 반드시 NR(No Rate)로 설정할 것. 다른 Rate Code 입력 시 금액이 발생하여 리베이트가 필요해질 수 있음.` },
+  { id: 14, title: '인벤토리(객실 재고) 확인 방법', content: `확인 방법\n1. 오페라 첫 화면 → Property Availability 클릭\n2. 확인하고 싶은 날짜의 객실 타입별 잔여 수량(Non-Deduct Available Rooms) 확인\n\n언제 확인하나?\n가능한 한 수시로 확인. 특히 점유율이 높거나 특정 타입 만실 시 업그레이드/타입 변경으로 수량 조정 필요.\n전화 또는 워크인 예약 문의 시 가장 먼저 인벤 확인.\n\n최대 정원\n- 일반 객실: 최대 2인\n- 트윈룸 엑스트라 베드 세팅 시: 최대 3인` },
+  { id: 15, title: '예약 생성 방법 (전화/워크인)', content: `확인 사항\n체크인·체크아웃 날짜 / 객실 타입 및 수량 / 객실당 이용 인원 / 조식 이용 여부\n\n처리 순서\n1. 해당 날짜 인벤토리 확인\n2. Bookings → Reservations → Look To Book Sales Screen 클릭\n3. 날짜·객실 타입·Rate Code·인원 설정 후 금액 안내\n4. 필수 고객 정보 입력 (이름, 전화번호, 이메일, 보증카드)\n5. 이메일로 Confirmation Letter 송부\n\n⚠️ 신입은 예약 생성 후 반드시 선임에게 확인받을 것.\n\n업무 집중 시간대 또는 바쁜 경우\n이름, 연락처, 예약 희망 날짜만 메모 후 예약실 왓츠앱으로 전달.` },
+  { id: 17, title: '구매 절차', content: `법인카드\n1. 전자결재 내 법인카드 신청서 작성\n2. 인터넷 구매 시 최종 금액 스크린샷 첨부\n3. 구매 링크 첨부\n4. 30만원 이상 결제 시 PR 먼저 올리고 결재 완료 후 법인카드 신청\n\n결재라인\n- 100만원 이하: 부서장 → FA 담당자 → FA 부서장\n- 100만원 이상 500만원 이하: 부서장 → FA 담당자 → FA 부서장 → 총지배인님\n- 500만원 이상 3,000만원 이하: 부서장 → FA 담당자 → FA 부서장 → 총지배인님 → 대표님\n\nPR (Purchase Request)\n1. 견적서 3개 업체 비딩 (단일 벤더일 경우 사유 기재 필수)\n2. 전자결재 → 구매양식 → Purchase Requisition 작성\n3. 결재라인: 부서장 → FA 담당자 → FA 부서장 (금액 무관) / 접수: FA 담당자\n4. 매달 25일~1일 사이 구매 금지. 마감 서류는 25일 이전 재경부 제출\n5. 마감 시 제출 서류: 세금계산서, 거래명세서(Optional), PO, PR, PR 첨부파일\n\n⚠️ 모든 구매는 PR 결재 완료 및 PO(Purchase Order) 승인 후 진행.\n⚠️ 첨부파일은 보안 풀어서 첨부.` },
+  { id: 18, title: '번포인트(BWP) 월마감 포스팅', content: `재경에서 [X월분 Burn points 추가 포스팅 요청] 메일 수신 시 처리.\n\n1. Post Payment → Method: BWP 선택\n2. 재경이 요청한 금액 입력\n3. Post Charge → Accommodation Supplement 코드 선택\n4. 추가 BWP 금액과 동일하게 포스팅하여 상계 처리\n\n⚠️ Accommodation Supplement는 VAT 포함 코드. 금액 입력 시 반드시 ÷1.1 적용해야 정확히 상계됨.` },
+  { id: 19, title: '전화 사용 안내', content: `- 프론트에서 객실로 전화: 6 + 객실번호\n- 외부로 전화: 9 + 전화번호\n- 해외 전화: 9001 + 국가번호 + 전화번호\n- 객실에서 외부 전화: 가능. 단, 통화료 발생하며 룸차지 됨.` },
+  { id: 20, title: '대표님 사무실 (1520호) 키 발급', content: `- 대표님 사무실은 1520호.\n- 객실 키 발급 시 호카스에서 룸넘버 9061로 만들 것.` },
+  { id: 21, title: '숙박권 (DAF / Stay Plus)', content: `DAF는 내부 레이트 코드 용어. 고객 안내 시 반드시 "숙박권" 또는 "Stay Plus"로 안내할 것.\n\n개요\n- ALL Accor Plus Explorer 멤버십 가입자에게 매년 제공되는 무료 숙박 혜택\n- 최소 2박 이상 예약 시 1박 무료 이용 가능\n- 전화 또는 워크인 예약 불가. Accor 앱을 통해서만 예약 가능\n\n조식 관련 주의사항\n- Stay Plus는 숙박만 보장. DAF 이용 날짜에 조식은 별도 요금 발생\n- 단, 해당 고객이 Accor 멤버십 Platinum 이상일 경우 DAF 이용 날짜에도 무료 조식 이용 가능\n\n결제 관련\n- DAF Rate는 0원이므로, 해당일을 제외한 나머지 일정의 Total 금액만 결제받으면 됨.` },
+  { id: 22, title: '오페라 클라우드 - 체크인 절차', content: `1. 고객 이름(alt name/성) 또는 예약번호로 검색 → Front Desk – Arrivals\n2. 예약 확인: 멤버십 타입, 체크인/아웃 날짜, 룸타입, 요금코드, 요금 확인\n3. Rate 클릭하여 상세 객실 요금 반드시 확인\n4. Alert / Note / Item Inventory / Trace 확인\n5. 객실 미배정 시: Room 옆 돋보기 클릭 → Room Status "Inspected" 선택 → Actions - Select Room\n   (*커넥팅룸, 장애인룸 요청이 없는 이상 미리 객실 지정하지 않기)\n6. I want to → Create → Registration Card 클릭하여 레지카드 출력 및 고객 정보 확인\n7. Check In 클릭 → 결제 확인 창 팝업 → Method: CP / Rule 5 / amount 0 입력 → Complete Check In\n8. 객실 키 2장 발급\n9. 선결제 요금 있을 경우 Billing에 포스팅` },
+  { id: 23, title: '오페라 클라우드 - 체크아웃 절차', content: `1. Front Desk – Departures에서 고객 이름 또는 객실번호 검색\n2. Trace 확인 후 I want to → Billing 창 진입 (또는 Balance 숫자 클릭)\n3. Notification 확인 (Make All as Read 절대 클릭 금지)\n4. 추가 요금 있을 경우 Post Charge로 청구\n   - 5000: 주차비 / 5234: 칫솔치약 / 1003: 엑스트라베드 / 1017: 얼리C/I / 1009: 레이트C/O\n5. Information Folio 클릭 → Preview to Print → 인보이스 출력하여 고객 확인\n6. Post Payment 또는 Check Out으로 결제 진행\n   (Check Out 버튼은 Settle Folio 완료 후 활성화됨)` },
+  { id: 24, title: '오페라 클라우드 - 체크아웃 옵션 (Advance Folio / Interim Folio)', content: `체크아웃 날짜 전에 요금 정산이 필요한 경우 사용.\nFront Desk - In House – Billing → 고객 예약 찾기 → I want to 클릭\n\nCheck Out Early\n- 고객이 요금 정산하고 실질적으로 체크아웃 진행할 때 사용\n- 체크아웃 날짜를 하루 앞당길 때 사용 가능\n\nAdvance Folio\n- 고객이 아직 체크아웃하지 않았지만 향후 예상 요금(객실료 등)까지 미리 정산할 때 사용\n- 예: 내일 체크아웃 예정인 고객이 오늘 미리 전체 요금 정산 원할 경우\n\nInterim Folio\n- 고객이 아직 체크아웃하지 않았지만 현재까지 발생한 모든 요금을 정산할 때 사용` },
+  { id: 25, title: '오페라 클라우드 - 예약 취소 및 복원', content: `예약 취소\n1. 취소할 예약 건 진입\n2. I want to → Modify → Cancel Reservation\n3. 취소 사유 코드 및 Description 반드시 입력\n\n예약 복원 (Reinstate)\n1. Manage Reservation 또는 Arrival 창에서 예약 검색\n   (Arrival에서 검색 시 Cancelled Status 체크 필요)\n2. I want to → Reinstate Reservation 클릭` },
+  { id: 26, title: '오페라 클라우드 - 워크인 예약 생성', content: `Front Desk – Walk in reservation 클릭\n1. 고객 이름 검색 → 재방문 고객: 기존 프로파일 사용 / 신규 고객: Create New Profile\n2. 객실 타입 및 Rate Code 선택 (조식 포함 여부 확인)\n3. Reservation Type: NON / DIS: 1A (워크인) 입력\n4. 결제 방식: CA(현금) 또는 CP(칩앤핀) 설정\n5. CP 설정 시 단말기에 카드 입력 후 Book Now\n6. 돋보기 버튼으로 Inspected 객실 배정\n7. 레지카드 출력 후 체크인 완료\n8. 객실 키 발급 (Cut New Key → 날짜·수량·키발급기 확인 → Create Key)` },
+  { id: 27, title: '오페라 클라우드 - 객실 변경 (Room Move)', content: `Front Desk - In House에서 변경할 객실 검색\n1. I want to → Move Room 클릭\n2. 이동할 새 객실번호 검색\n3. 객실 변경 이유, 설명, 이전 객실 상태 선택 후 완료` },
+  { id: 28, title: '오페라 클라우드 - OO/OS 설정 (Out of Order / Out of Service)', content: `OO (Out of Order): 객실 시설 하자로 판매 불가 상태 → 판매 가능 객실에서 제외됨\nOS (Out of Service): 잠시 판매 어려운 상태 (룸쇼, 객실변경, 당일 수리 가능한 문제) → 판매 가능 객실에 포함됨\n\n설정 방법\n1. Inventory → Room Management → Out of Order / Out of Service 클릭\n2. New 버튼 클릭\n3. 객실번호 입력 후 Search → 객실 선택 → Out of Order 클릭\n4. 사유 코드 및 설정 기간 입력\n\n해제 방법\n해당 객실 선택 → Eclipse → Delete 클릭` },
+  { id: 29, title: '오페라 클라우드 - Routing 설정', content: `특정 요금을 특정 폴리오(Window) 또는 다른 객실에 청구할 때 사용.\n고객 예약 → Routing Instructions → New 클릭\n\nFolio (Window) Routing\n- 특정 요금을 특정 폴리오 창으로 분리 청구할 때 사용\n- Transaction 타입: BB(조식+객실료) 또는 RT(객실료만) 주로 사용\n\nRoom Routing\n- 모든 요금을 다른 객실에 청구할 때 사용\n- 여행사 예약 시 자주 사용\n  예: 야놀자 → 9010(Hotelnow) / 여기어때 → 9009(Hoteltime)` },
+  { id: 30, title: '오페라 클라우드 - No Post 설정', content: `보증 카드(또는 현금)가 없는 고객에게 설정. No Post 설정 시 객실에 부가 요금 부과 불가, 미니바 이용 제한, 레스토랑 이용 시 현장 결제 필요.\n\n1. 해당 예약 → I want to → Billing → Payment Instructions\n2. New / Edit Payment Instructions 클릭\n3. No Post 활성화 확인 및 클릭\n\n※ CA(현금)으로 설정된 경우 자동으로 No Post 활성화됨` },
+  { id: 31, title: '오페라 클라우드 - 환전 방법', content: `투숙객만 환전 가능. 외화 → 원화만 가능 (원화 → 외화 불가)\n\n1. Financials → Cashiering → Currency Calculator\n2. 환전 타입 선택 (현금 또는 여행자 수표)\n3. From Currency(외화 종류) 및 From Amount(금액) 입력\n4. To Currency(원화)와 To Amount(환전 금액) 자동 입력됨\n5. Post Currency Exchange 클릭\n6. 고객 객실번호 또는 성함 입력 후 검색 → 고객 선택\n7. Post Exchange 클릭 → Send Receipt → Preview to Print → 2장 출력\n   (1장: 고객 서명 받아 재경부 보관 / 1장: 고객 제공)\n8. 고객에게 정확한 원화 금액 제공` },
+  { id: 32, title: '오페라 클라우드 - DAF 처리 방법', content: `1. 구글에서 "Oanda Converter" 검색\n2. Currency I Have: USD / Currency I Want: KRW 설정\n3. 20달러 입력 후 당일 환율 금액 확인\n4. 확인된 환율 금액을 Opera Rate에 입력\n   (고객 예약 → Details → Edit → Rate Code: DAF → 금액 입력 → Save)\n   ※ Rate는 반드시 당일 입력 (2박인 경우 DAF 해당일에 입력)\n5. Routing: Folio → Payee → FOC REDEMTION(DAF) 선택 (AR넘버 있는 것으로)\n   Available에서 RT 선택하여 이동\n6. 체크아웃 시 CL 처리\n7. CL 처리 시 Resa Web 복사하여 인보이스에 첨부 (PM ID와 Rate Code에 형광펜 표시)` },
+  { id: 16, title: '자주 사용하는 Rate Code', content: `- RA1: 조식 미포함 / 1일 전 오후 6시까지 무료 취소·변경 가능\n- RA3: 조식 미포함 / 취소·변경 불가\n- RB1: 조식 포함 / 1일 전 오후 6시까지 무료 취소·변경 가능\n- RB3: 조식 포함 / 취소·변경 불가\n- C07: 포스코 제휴가\n\n포스코 제휴 예약 특이사항\n- 무료 주차 이용 가능\n- 해당일 점유율 85% 이상 시 제휴가 마감 안내` }
+,
+  { id: 33, title: '세금계산서 발행', content: `세금계산서 발행이 필요한 경우 하기 서류를 출력하여 재경부에 전달.\n\n1. 세금계산서 발행 요청폼 (엑셀) 표지\n2. 사업자등록증\n3. 오페라 인보이스 (세금계산서 발행용)` },
+  { id: 34, title: 'B1 부대시설 컴플레인 처리 지침', content: `직급별 권한 기준\n- 대리/주임급: 물질적 보상 권한 보유 (무료 관람권, 할인권, 무료조식, 무료투숙 기안서 제출 등)\n- 인차지급 사원: 간단 보상 제공 (웰컴 드링크, 웰컴 패키지 등) / 대리/주임급에 보고 및 건의\n- 부차지급 사원: 인차지 판단 하에 간단 보상 제공 / 인차지 보고 후 처리\n- 수습/인턴급: 진심으로 사과 / 인차지에 보고 / 고객에게 개선 약속\n\n1. 모노플렉스 (영상 불량, 소음 등)\n- 수습/인턴급: 고객에게 사과 후 내부 공유 및 개선 약속\n- 인차지 이상: 영화 무료 관람권 또는 할인권 제공 가능\n\n2. 헬스장 (기구 고장, 노후화, 공사 소음/분진 등)\n- MN 피트니스 센터 쿠폰 전 직원 배부 가능\n- 인차지: 타 부서 공유 및 대리/주임급 보고\n- 수습/인턴급: 공사 일정 숙지, 체크인 시 고객 안내\n\n3. 수유실 (CCTV 확인 요청, 수상한 인물 등)\n- 인차지/부차지 컨펌 하에 GSO 동행하여 CCTV 확인\n- 고객에게 시간대 및 인물 구두 안내\n- 상주 직원 없는 점 안내 및 사과, 웰컴 드링크 등 간단 보상 제공` },
+  { id: 35, title: 'Balance Transfer 및 Room Deposit 처리', content: `Balance Transfer\n현 예약의 Balance를 바로 이어지는 연결예약에 넘길 때 사용.\n1. 현 예약에 Balance Transfer로 +, - 포스팅\n2. 현 예약 Balance를 0으로 만들 수 있는 금액 확인\n3. 반대 부호 금액을 다음 예약으로 이전\n4. 현 예약 체크아웃 → 다음 예약 체크인 후 반대 부호로 포스팅\n\nRoom Deposit\n연결예약이 아닌, 하루 이상 텀이 있는 예약들을 미리 결제했을 때 사용.\n1. 체크아웃 시 남은 Balance → 7890 Room Deposit Prepayment 코드에 + 금액 입력\n2. Folio 2장 출력 → Misc Voucher에 Room Deposit 기재\n   - 핑크색: 프론트 보관 / 흰색: 재경부 전달\n3. 고객 프로파일 노트에 기록 + 다음 예약 NOTE에 "RO PP DEPOSIT" 기재\n4. Room DP 고객 체크인 시: Billing → Post Payment → Bank Transfer로 Deposit 전액 포스팅\n5. 체크아웃 시 또 Balance 남으면 위 절차 반복` },
+  { id: 36, title: '프론트 체크리스트 - 정기 업무', content: `액션폼 (그룹 예약건)\n- 해당 예약건 PM방에 결제방법, 특이사항(주차, 조식, Wake-up Call, 금액 등) 기재 및 인계\n- 오페라와 액션폼 이름·금액 일치 여부 확인\n\nRoom Show\n- 출력하여 프론트 인계 시 내용 공유\n- 해당 시간 근무자 미리 객실 잡고 준비 (객실 픽업 또는 OS 설정)\n- 이른 시간인 경우 하우스키핑에 미리 선정비 요청\n\nDID 업로드 (마케팅)\n- 마케팅 담당자 전달 사진/동영상 프론트 사무실 프로그램으로 업로드\n- Accor 관련 영상 또는 패키지 홍보 파일\n\nOTA 패키지\n- 신설 패키지 내용 숙지 및 프론트 직원 공유\n- 패키지 구성품 사무실에 여유있게 구비 요청\n- 체크인 전 셋팅 필요 건은 미리 객실 어사인 후 하우스키핑에 셋팅 요청\n- 해당 내용 GSO 직원에게 공유\n\nHoteltime 객실료 조정\n- OTA 담당자 메일 수신 시 Accommodation Supplement 또는 Cash로 처리 후 회신\n\n번포인트 추가 입금 처리\n- 9035(Booking with Points) 페이먼트 & Accommodation Supplement 상계 포스팅\n\n환율 변경\n- 일주일에 한 번 재경부에서 외국환 매매율 메일 수신\n- 환율 변경 시간에 맞춰 사무실 시스템에서 Cash Today로 변경\n- 변경된 DID 사진 찍어 메일 회신\n\n카드 거래 내역 확인\n- 단말기 결제는 됐으나 오페라 미반영 건 재경부 메일 수신\n- Manage Report → Duty FO → CC 카드 내역 확인 및 중복 확인\n- 9063 Daily Sales에 카드 포스팅 후 회신\n\n카드 종류 포스팅 오류 정정\n- Correction 후 재포스팅\n- 잘못 Payment한 금액 반대 부호로 Payment(0 만들기) → 영수증 카드로 재결제\n- Supplement에 승인번호 및 결제날짜 기입\n\n입금증 처리 (월~금)\n- 입금증 메일 수신 시 해당 예약건 찾아 Bank Transfer 처리 → 캡처하여 전체 회신\n\n하우스키핑 마감 파일\n- 총 2개 파일 (Lost&Found 서류 / 미정비 특이사항 서류)\n- 각각 파일에 저장: DPT-FO → 하우스키핑 → 해당 폴더\n- Lost & Found 오페라에 작성 → 해당 예약건 Manage Profile → Note에 입력` }
+,
+  { id: 37, title: '번포인트(포인트) 사용 예약건 결제', content: `Accor(All.com)을 통해 들어온 예약건은 반드시 Note 확인하여 포인트 사용 여부 확인.\n- Note에 포인트 사용액이 기재되어 있음\n- 결제 금액 = Total 금액 - 포인트 사용액\n- 해당 금액만큼만 현장 결제 받으면 됨` },
+  { id: 38, title: 'Accor(All.com) 예약건 현장결제 안내', content: `All.com 또는 Accor 앱을 통해 들어온 모든 예약은 현장 결제.\n\n고객이 "이미 결제했다"고 주장하는 경우 — 먼저 아래 두 가지 반드시 확인\n1. Billing, Note, Room Deposit 서류철을 모두 확인하여 Deposit으로 잡혀있는 선결제 건이 있는지 확인\n2. 라우팅이 걸려있어 다른 예약건과 함께 결제가 완료된 건은 아닌지 확인\n\n위 두 가지 모두 해당 없을 경우 아래와 같이 안내\n- 이비스 스타일 강남은 아코르 공식 사이트/앱 예약에 대해 사전 청구를 진행하지 않으며 숙박료는 반드시 현장 결제됨\n- 앱이나 고객 메일에 PAID로 표시되는 경우가 있으나 이는 아코르 측 오류임\n- 예약 시 입력한 카드번호는 보증용으로만 등록된 것임\n- 다른 아코르 호텔은 사전결제 옵션이 있으나 우리 호텔은 해당 없음\n\n그래도 납득하지 못하는 경우\n- 예약이 생성(Created)된 날짜와 Win1에 등록된 보증카드 뒷 4자리를 알려줄 것\n- 해당 날짜에 해당 카드 계좌에서 출금 내역이 있는지 직접 확인해보도록 안내\n\n⚠️ 절대 미결제 상태로 키 발급하지 말 것. "죄송하다", "확인해보겠다" 등 애매한 응대 금지. 명확하게 안내할 것.` }
+,
+  { id: 39, title: '시네마(모노플렉스) 대관 결제 및 프로세스', content: `상영대관과 비상영대관에 따라 결제 및 포스팅 처리 방식이 다름.\n\n■ 상영대관\n\n대관 당일 결제\n1. 모노플렉스 단말기로 결제 진행\n2. 오페라에 매출 및 결제수단 (Union Pay Card Manual) 포스팅\n\n사전 결제 (대관일 전 미리 방문하여 결제하는 경우)\n1. 호텔 단말기로 사전 결제 진행\n2. 오페라에 Unclaimed Deposits (7995) 포스팅 후 해당 PM방 체크아웃 처리\n3. 대관 당일 모노플렉스 단말기에서 현금결제 처리\n4. 대관 당일 오페라에서 해당 디파짓 상계 후 매출 포스팅\n\n■ 비상영대관\n\n대관 당일 결제\n1. 호텔 단말기로 결제 및 매출 포스팅 진행\n\n사전 결제 (대관일 전 미리 방문하여 결제하는 경우)\n1. 호텔 단말기로 사전 결제 진행\n2. 오페라에 Unclaimed Deposits (7995) 포스팅 후 해당 PM방 체크아웃 처리\n3. 대관 당일 오페라에서 해당 디파짓 상계 후 매출 포스팅\n\n⚠️ 상영/비상영대관 사전 결제 시 반드시 PM방에 Deposit 포스팅 후 당일 체크아웃 처리할 것.` }
+];
+
+let logs = JSON.parse(localStorage.getItem('hotel_logs') || '[]');
+let apiKey = localStorage.getItem('openai_api_key') || '';
+let conversationHistory = [];
+let isLoading = false;
+let editingId = null;
+let nextId = Math.max(...manualItems.map(i => i.id), 0) + 1;
+
+const apiKeyInput = document.getElementById('api-key-input');
+const saveKeyBtn = document.getElementById('save-key-btn');
+const userInput = document.getElementById('user-input');
+const sendBtn = document.getElementById('send-btn');
+const chatArea = document.getElementById('chat-area');
+
+if (apiKey) { apiKeyInput.value = apiKey; sendBtn.disabled = false; saveKeyBtn.textContent = '✓ 저장됨'; }
+saveKeyBtn.addEventListener('click', () => {
+  const key = apiKeyInput.value.trim(); if (!key) return;
+  apiKey = key; localStorage.setItem('openai_api_key', key);
+  saveKeyBtn.textContent = '✓ 저장됨'; sendBtn.disabled = false;
+});
+apiKeyInput.addEventListener('input', () => { saveKeyBtn.textContent = '저장'; sendBtn.disabled = !apiKeyInput.value.trim(); });
+userInput.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 120) + 'px'; });
+userInput.addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled && !isLoading) sendMessage(); } });
+
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(name + '-page').classList.add('active');
+  el.classList.add('active');
+  if (name === 'stats') renderStats();
+  if (name === 'manual') renderManual();
+}
+
+function saveManualData() { localStorage.setItem('hotel_manual', JSON.stringify(manualItems)); }
+
+function renderManual() {
+  const container = document.getElementById('manual-items');
+  container.innerHTML = manualItems.map(item => `
+    <div class="manual-item">
+      <div class="manual-item-content">
+        <div class="manual-item-title">${item.title}</div>
+        <div class="manual-item-text">${item.content}</div>
+      </div>
+      <div class="manual-item-actions">
+        <button class="btn-edit" onclick="editItem(${item.id})">수정</button>
+        <button class="btn-danger" onclick="deleteItem(${item.id})">삭제</button>
+      </div>
+    </div>`).join('');
+}
+
+function toggleAddForm() {
+  const form = document.getElementById('add-form');
+  const isHidden = form.style.display === 'none';
+  form.style.display = isHidden ? 'block' : 'none';
+  if (isHidden) { editingId = null; document.getElementById('form-title').textContent = '새 항목 추가'; document.getElementById('item-title').value = ''; document.getElementById('item-content').value = ''; }
+}
+
+function editItem(id) {
+  const item = manualItems.find(i => i.id === id); if (!item) return;
+  editingId = id;
+  document.getElementById('form-title').textContent = '항목 수정';
+  document.getElementById('item-title').value = item.title;
+  document.getElementById('item-content').value = item.content;
+  document.getElementById('add-form').style.display = 'block';
+  document.getElementById('add-form').scrollIntoView({ behavior: 'smooth' });
+}
+
+function saveManualItem() {
+  const title = document.getElementById('item-title').value.trim();
+  const content = document.getElementById('item-content').value.trim();
+  if (!title || !content) return alert('제목과 내용을 입력하세요.');
+  if (editingId) { const item = manualItems.find(i => i.id === editingId); if (item) { item.title = title; item.content = content; } }
+  else { manualItems.push({ id: nextId++, title, content }); }
+  saveManualData(); renderManual(); toggleAddForm();
+}
+
+function deleteItem(id) {
+  if (!confirm('이 항목을 삭제할까요?')) return;
+  manualItems = manualItems.filter(i => i.id !== id);
+  saveManualData(); renderManual();
+}
+
+function renderStats() {
+  const total = logs.length;
+  const helpful = logs.filter(l => l.feedback === 'helpful').length;
+  const unhelpful = logs.filter(l => l.feedback === 'unhelpful').length;
+  const unanswered = logs.filter(l => l.unanswered).length;
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card"><div class="label">총 질문 수</div><div class="value">${total}</div></div>
+    <div class="stat-card"><div class="label">도움이 됐어요</div><div class="value" style="color:var(--green)">${helpful}</div></div>
+    <div class="stat-card"><div class="label">이해 안 됐어요</div><div class="value" style="color:var(--red)">${unhelpful}</div></div>
+    <div class="stat-card"><div class="label">미해결 질문</div><div class="value" style="color:var(--text-muted)">${unanswered}</div></div>`;
+  const freq = {};
+  logs.forEach(l => { freq[l.question] = (freq[l.question] || 0) + 1; });
+  const sorted = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,10);
+  document.getElementById('top-questions').innerHTML = sorted.length === 0 ? '<div class="empty-state">아직 질문 데이터가 없어요.</div>' :
+    sorted.map(([q,count],i) => { const log = logs.find(l => l.question === q); const tag = log?.feedback === 'helpful' ? '<span class="q-tag helpful">👍 도움됨</span>' : log?.feedback === 'unhelpful' ? '<span class="q-tag unhelpful">👎 이해안됨</span>' : '';
+    return `<div class="q-item"><div class="q-rank">${i+1}</div><div class="q-text">${q}</div>${tag}<div class="q-count">${count}회</div></div>`; }).join('');
+  const unLogs = logs.filter(l => l.unanswered);
+  document.getElementById('unanswered-list').innerHTML = unLogs.length === 0 ? '<div class="empty-state">미해결 질문이 없어요.</div>' :
+    unLogs.map(l => `<div class="u-item"><div class="u-dot"></div>${l.question}</div>`).join('');
+}
+
+function buildSystemPrompt() {
+  const manual = manualItems.map(item => `[${item.title}]\n${item.content}`).join('\n\n');
+  return `당신은 호텔 프론트 데스크 신입 직원을 위한 교육 어시스턴트입니다.
+아래 매뉴얼을 기반으로 정확하고 친절하게 답변하세요.
+한국어로 질문하면 한국어로, 영어로 질문하면 영어로 답변하세요.
+
+중요 지침:
+- 질문이 특정 상황이나 시나리오 형태로 오더라도 (예: "손님이 ~라고 한다", "~경우 어떻게 해요") 반드시 매뉴얼에서 관련 내용을 찾아 답변하세요.
+- 매뉴얼의 여러 항목이 관련될 경우 모두 참고하여 종합적으로 답변하세요.
+- 절차가 있는 경우 단계별로 명확하게 안내하세요.
+- 매뉴얼에 없는 내용은 정확히 "UNANSWERED:"로 시작한 후 "매뉴얼에 해당 내용이 없습니다. 선임 직원에게 문의해 주세요."라고 안내하세요.
+
+=== 호텔 운영 매뉴얼 ===
+${manual}`;
+}
+
+function hideWelcome() { const w = document.getElementById('welcome-msg'); if (w) w.style.display = 'none'; }
+
+function appendMessage(role, content, questionForLog) {
+  hideWelcome();
+  const msg = document.createElement('div'); msg.className = `message ${role}`;
+  const avatar = document.createElement('div'); avatar.className = 'avatar'; avatar.textContent = role === 'user' ? 'U' : '✦';
+  const bubble = document.createElement('div'); bubble.className = 'bubble';
+  const isUnanswered = content.startsWith('UNANSWERED:');
+  const displayContent = isUnanswered ? content.replace('UNANSWERED:', '').trim() : content;
+  bubble.innerHTML = formatText(displayContent);
+  msg.appendChild(avatar); msg.appendChild(bubble); chatArea.appendChild(msg);
+  if (role === 'assistant') {
+    const logEntry = { question: questionForLog, feedback: null, unanswered: isUnanswered, time: Date.now() };
+    logs.push(logEntry); localStorage.setItem('hotel_logs', JSON.stringify(logs));
+    const logIndex = logs.length - 1;
+    const fbRow = document.createElement('div'); fbRow.className = 'feedback-row';
+    fbRow.innerHTML = `<span style="font-size:11px;color:var(--text-muted);line-height:2">도움이 됐나요?</span>
+      <button class="fb-btn" onclick="giveFeedback(${logIndex}, 'helpful', this)">👍 도움됐어요</button>
+      <button class="fb-btn" onclick="giveFeedback(${logIndex}, 'unhelpful', this)">👎 이해 안 돼요</button>`;
+    chatArea.appendChild(fbRow);
+  }
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function giveFeedback(index, type, btn) {
+  logs[index].feedback = type; localStorage.setItem('hotel_logs', JSON.stringify(logs));
+  btn.parentElement.innerHTML = type === 'helpful' ? '<span style="font-size:11px;color:var(--green)">👍 피드백 감사해요!</span>' : '<span style="font-size:11px;color:var(--red)">👎 매뉴얼 개선에 활용됩니다.</span>';
+}
+
+function appendTyping() {
+  hideWelcome();
+  const msg = document.createElement('div'); msg.className = 'message assistant'; msg.id = 'typing-indicator';
+  const avatar = document.createElement('div'); avatar.className = 'avatar'; avatar.textContent = '✦';
+  const bubble = document.createElement('div'); bubble.className = 'bubble';
+  bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+  msg.appendChild(avatar); msg.appendChild(bubble); chatArea.appendChild(msg); chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function removeTyping() { const t = document.getElementById('typing-indicator'); if (t) t.remove(); }
+
+function formatText(text) {
+  return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/^- (.+)/gm, '<li>$1</li>').replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>').replace(/\n/g, '<br>');
+}
+
+async function sendMessage() {
+  const text = userInput.value.trim(); if (!text || isLoading || !apiKey) return;
+  isLoading = true; sendBtn.disabled = true; userInput.value = ''; userInput.style.height = 'auto';
+  appendMessage('user', text); conversationHistory.push({ role: 'user', content: text }); appendTyping();
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model: 'gpt-4o-mini', messages: [{ role: 'system', content: buildSystemPrompt() }, ...conversationHistory], max_tokens: 800, temperature: 0.3 })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || '오류가 발생했습니다.');
+    const reply = data.choices[0].message.content;
+    conversationHistory.push({ role: 'assistant', content: reply });
+    removeTyping(); appendMessage('assistant', reply, text);
+  } catch (err) {
+    removeTyping();
+    const errDiv = document.createElement('div'); errDiv.className = 'error-msg'; errDiv.textContent = `오류: ${err.message}`; chatArea.appendChild(errDiv);
+    conversationHistory.pop();
+  }
+  isLoading = false; sendBtn.disabled = false; userInput.focus();
+}
+
+function sendChip(text) { userInput.value = text; sendMessage(); }
+</script>
+</body>
+</html>
