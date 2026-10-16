@@ -3,156 +3,186 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hotel Front Desk Training Assistant</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>FO Assistant · ibis Styles Ambassador Seoul Gangnam</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root {
-  --bg: #0f0e0c; --surface: #1a1814; --surface2: #222018; --border: #2e2b24;
-  --gold: #c9a84c; --gold-light: #e8c97a; --gold-dim: #7a6530;
-  --text: #f0ebe0; --text-muted: #8a8070;
-  --user-bubble: #1e2535; --ai-bubble: #1a1814;
-  --green: #4caf7a; --red: #e07070; --blue: #7aa0d4;
+  --brand: #4E9A2A; --brand-strong: #3C7E1E; --brand-soft: #EEF6E7; --brand-line: #CFE5BE; --lime: #8DC63F;
+  --bg: #FFFFFF; --surface: #F6F7F5; --surface2: #EEF0EC; --border: #E3E7E0;
+  --text: #1E241C; --text-sub: #4A5346; --text-muted: #7C8578;
+  --ai-bubble: #F3F5F1; --user-bubble: #4E9A2A;
+  --green: #3C8D2F; --red: #C84B4B;
+  --radius: 14px; --shadow: 0 1px 2px rgba(20,30,15,.05), 0 4px 16px rgba(20,30,15,.05);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-nav { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; flex-shrink: 0; }
-.nav-logo { display: flex; align-items: center; gap: 10px; padding: 16px 0; margin-right: 24px; }
-.logo-mark { width: 32px; height: 32px; border: 1.5px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; color: var(--gold); font-size: 14px; }
-.nav-logo h1 { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--text); }
-.nav-logo p { font-size: 10px; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; }
-.nav-tabs { display: flex; flex: 1; }
-.nav-tab { padding: 18px 20px; font-size: 13px; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+html, body { height: 100%; }
+body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: var(--bg); color: var(--text); height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; }
+.ambird { background-image: url(data:image/jpeg;base64,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); background-size: cover; background-position: center; border-radius: 50%; flex-shrink: 0; }
+
+/* header */
+nav { background: #fff; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 28px; padding: 0 24px; height: 60px; flex-shrink: 0; }
+.nav-logo { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.nav-logo .ambird { width: 34px; height: 34px; box-shadow: 0 0 0 2px #fff, 0 0 0 3px var(--brand-line); }
+.nav-logo h1 { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; white-space: nowrap; }
+.nav-logo h1 span { color: var(--brand); }
+.nav-logo p { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+.nav-tabs { display: flex; height: 100%; gap: 4px; }
+.nav-tab { display: flex; align-items: center; padding: 0 14px; font-size: 14px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; white-space: nowrap; }
 .nav-tab:hover { color: var(--text); }
-.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
-.nav-right { margin-left: auto; display: flex; align-items: center; }
-.status-dot { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
-.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px #4caf7a88; animation: pulse 2.5s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-#api-bar { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 8px 24px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-#api-bar label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
-#api-key-input { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; color: var(--text-muted); font-size: 12px; font-family: monospace; outline: none; transition: border-color 0.2s; }
-#api-key-input:focus { border-color: var(--gold-dim); }
-#save-key-btn { background: var(--gold-dim); color: var(--text); border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
-#save-key-btn:hover { background: var(--gold); color: #000; }
-.page { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+.nav-tab.active { color: var(--brand-strong); border-bottom-color: var(--brand); font-weight: 600; }
+.nav-right { display: none; }
+
+/* api key bar */
+#api-bar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 8px 24px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+#api-bar label { font-size: 12px; font-weight: 600; color: var(--text-sub); white-space: nowrap; }
+#api-key-input { flex: 1; max-width: 520px; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; color: var(--text-sub); font-size: 13px; font-family: ui-monospace, Menlo, monospace; outline: none; transition: border-color .15s, box-shadow .15s; }
+#api-key-input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+#save-key-btn { background: var(--brand); color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; white-space: nowrap; font-family: inherit; }
+#save-key-btn:hover { background: var(--brand-strong); }
+
+.page { display: none; flex: 1; overflow: hidden; flex-direction: column; min-height: 0; }
 .page.active { display: flex; }
-#chat-area { flex: 1; overflow-y: auto; padding: 24px 24px 12px; display: flex; flex-direction: column; gap: 18px; scroll-behavior: smooth; }
-#chat-area::-webkit-scrollbar { width: 4px; }
-#chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-.welcome { text-align: center; padding: 36px 20px; opacity: 0; animation: fadeUp 0.6s ease forwards; }
-.welcome-icon { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--gold); margin-bottom: 14px; }
-.welcome h2 { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 8px; }
-.welcome p { font-size: 13px; color: var(--text-muted); line-height: 1.7; max-width: 360px; margin: 0 auto 20px; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-.chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
-.chip:hover { border-color: var(--gold-dim); color: var(--gold-light); }
-@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-.message { display: flex; gap: 10px; opacity: 0; animation: fadeUp 0.35s ease forwards; max-width: 740px; }
-.message.user { align-self: flex-end; flex-direction: row-reverse; }
+
+/* chat */
+#chat-area { flex: 1; overflow-y: auto; padding: 28px max(20px, calc((100% - 820px) / 2)) 16px; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth; background: #fff; }
+#chat-area::-webkit-scrollbar { width: 6px; }
+#chat-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.welcome { text-align: center; padding: 48px 16px 24px; margin: auto 0; opacity: 0; animation: fadeUp .5s ease forwards; }
+.welcome .ambird { width: 96px; height: 96px; margin: 0 auto 18px; box-shadow: 0 0 0 4px #fff, 0 0 0 5px var(--brand-line), var(--shadow); }
+.welcome h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; color: var(--text); margin-bottom: 8px; }
+.welcome h2 span { color: var(--brand); }
+.welcome p { font-size: 14px; color: var(--text-sub); line-height: 1.7; max-width: 420px; margin: 0 auto 24px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 560px; margin: 0 auto; }
+.chip { background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 8px 14px; font-size: 13px; color: var(--text-sub); cursor: pointer; transition: all .15s; }
+.chip:hover { border-color: var(--brand); color: var(--brand-strong); background: var(--brand-soft); }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.message { display: flex; gap: 10px; opacity: 0; animation: fadeUp .25s ease forwards; max-width: min(720px, 90%); }
+.message.user { align-self: flex-end; }
 .message.assistant { align-self: flex-start; }
-.avatar { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-family: 'DM Serif Display', serif; }
-.message.user .avatar { background: var(--user-bubble); border: 1px solid #2e3a50; color: var(--blue); }
-.message.assistant .avatar { background: var(--surface2); border: 1px solid var(--border); color: var(--gold); }
-.bubble { padding: 11px 15px; border-radius: 12px; font-size: 14px; line-height: 1.7; max-width: calc(100% - 42px); }
-.message.user .bubble { background: var(--user-bubble); border: 1px solid #2e3a50; border-radius: 12px 4px 12px 12px; }
-.message.assistant .bubble { background: var(--ai-bubble); border: 1px solid var(--border); border-radius: 4px 12px 12px 12px; }
-.bubble strong { color: var(--gold-light); font-weight: 500; }
+.message.user .avatar { display: none; }
+.message.assistant .avatar { width: 40px; height: 40px; border: 1px solid var(--border); }
+.msg-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.sender { font-size: 12px; font-weight: 600; color: var(--text-sub); padding-left: 2px; }
+.bubble { padding: 11px 15px; font-size: 15px; line-height: 1.65; min-width: 0; max-width: 100%; word-break: keep-all; overflow-wrap: break-word; }
+.message.user .bubble { background: var(--user-bubble); color: #fff; border-radius: 16px 16px 4px 16px; }
+.message.assistant .bubble { background: var(--ai-bubble); color: var(--text); border-radius: 4px 16px 16px 16px; }
+.bubble strong { font-weight: 700; color: inherit; }
+.message.assistant .bubble strong { color: var(--brand-strong); }
 .bubble ul { padding-left: 18px; margin: 4px 0; }
 .bubble li { margin-bottom: 3px; }
-.feedback-row { display: flex; gap: 8px; margin-top: 8px; padding-left: 42px; align-items: center; }
-.fb-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
-.fb-btn:hover { border-color: var(--gold-dim); color: var(--text); }
-.typing-dots { display: flex; gap: 5px; align-items: center; padding: 4px 0; }
-.typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--gold-dim); animation: bounce 1.2s ease-in-out infinite; }
-.typing-dots span:nth-child(2){animation-delay:0.2s} .typing-dots span:nth-child(3){animation-delay:0.4s}
-@keyframes bounce { 0%,80%,100%{transform:translateY(0);opacity:0.4} 40%{transform:translateY(-5px);opacity:1} }
-#input-area { padding: 14px 24px 18px; border-top: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
-.input-wrapper { display: flex; align-items: flex-end; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 9px 9px 9px 15px; transition: border-color 0.2s; }
-.input-wrapper:focus-within { border-color: var(--gold-dim); }
-#user-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif; resize: none; max-height: 120px; line-height: 1.5; }
+.bubble li::marker { color: var(--brand); }
+.bubble .source { display: block; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #D6DCD2; font-size: 12px; color: var(--text-muted); }
+.feedback-row { display: flex; gap: 6px; margin-top: -4px; padding-left: 52px; align-items: center; }
+.feedback-row > span { font-size: 12px !important; color: var(--text-muted) !important; margin-right: 2px; }
+.fb-btn { background: #fff; border: 1px solid var(--border); border-radius: 999px; padding: 4px 11px; font-size: 12px; color: var(--text-sub); cursor: pointer; transition: all .15s; font-family: inherit; }
+.fb-btn:hover { border-color: var(--brand); color: var(--brand-strong); }
+.typing-dots { display: flex; gap: 5px; align-items: center; padding: 5px 2px; }
+.typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--brand); animation: bounce 1.2s ease-in-out infinite; }
+.typing-dots span:nth-child(2) { animation-delay: .2s; } .typing-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes bounce { 0%,80%,100% { transform: translateY(0); opacity: .35; } 40% { transform: translateY(-4px); opacity: 1; } }
+
+#input-area { padding: 12px max(20px, calc((100% - 820px) / 2)) 16px; border-top: 1px solid var(--border); background: #fff; flex-shrink: 0; }
+.input-wrapper { display: flex; align-items: flex-end; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 10px 10px 10px 16px; transition: border-color .15s, box-shadow .15s, background .15s; }
+.input-wrapper:focus-within { border-color: var(--brand); background: #fff; box-shadow: 0 0 0 3px var(--brand-soft); }
+#user-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-size: 15px; font-family: inherit; resize: none; max-height: 120px; line-height: 1.5; padding: 4px 0; }
 #user-input::placeholder { color: var(--text-muted); }
-#send-btn { width: 34px; height: 34px; border-radius: 8px; border: none; background: var(--gold-dim); color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
-#send-btn:hover:not(:disabled) { background: var(--gold); color: #000; }
-#send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-#send-btn svg { width: 15px; height: 15px; }
-.input-hint { font-size: 11px; color: var(--text-muted); margin-top: 7px; text-align: center; }
-.error-msg { background: #2a1515; border: 1px solid #5a2020; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--red); align-self: center; max-width: 500px; text-align: center; }
-#stats-page { overflow-y: auto; padding: 28px; gap: 20px; }
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
-.stat-card .label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
-.stat-card .value { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--gold); }
-.section-title { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); margin-bottom: 14px; }
-.question-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
-.q-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
-.q-rank { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--gold-dim); min-width: 24px; }
-.q-text { flex: 1; font-size: 13px; color: var(--text); }
-.q-count { font-size: 12px; color: var(--text-muted); background: var(--surface2); padding: 3px 10px; border-radius: 20px; }
-.unanswered-list { display: flex; flex-direction: column; gap: 8px; }
-.u-item { background: var(--surface); border: 1px solid #3a2020; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 10px; }
-.u-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
-.empty-state { text-align: center; padding: 40px; color: var(--text-muted); font-size: 13px; }
-#manual-page { overflow-y: auto; padding: 28px; gap: 0; }
-.manual-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.manual-header h2 { font-family: 'DM Serif Display', serif; font-size: 18px; }
-.btn-primary { background: var(--gold-dim); color: var(--text); border: none; border-radius: 8px; padding: 9px 18px; font-size: 13px; cursor: pointer; transition: background 0.2s; }
-.btn-primary:hover { background: var(--gold); color: #000; }
-.btn-danger { background: #3a1515; color: var(--red); border: 1px solid #5a2020; border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; }
-.btn-edit { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; }
+#send-btn { width: 38px; height: 38px; border-radius: 12px; border: none; background: var(--brand); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .15s; flex-shrink: 0; }
+#send-btn:hover:not(:disabled) { background: var(--brand-strong); }
+#send-btn:disabled { background: #C9D2C4; cursor: not-allowed; }
+#send-btn svg { width: 16px; height: 16px; }
+.input-hint { font-size: 12px; color: var(--text-muted); margin-top: 8px; text-align: center; }
+.error-msg { background: #FDF2F2; border: 1px solid #F2C9C9; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--red); align-self: center; max-width: 500px; text-align: center; }
+
+/* stats */
+#stats-page, #manual-page { overflow-y: auto; padding: 28px max(20px, calc((100% - 900px) / 2)); background: var(--surface); }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 28px; }
+.stat-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+.stat-card .label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; }
+.stat-card .value { font-size: 30px; font-weight: 800; color: var(--brand-strong); letter-spacing: -0.03em; }
+.section-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+.question-list, .unanswered-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+.q-item, .u-item { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text); }
+.q-rank { font-size: 15px; font-weight: 800; color: var(--brand); min-width: 22px; }
+.q-text { flex: 1; font-size: 14px; color: var(--text); }
+.q-count { font-size: 12px; font-weight: 600; color: var(--brand-strong); background: var(--brand-soft); padding: 3px 10px; border-radius: 999px; }
+.u-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.empty-state { text-align: center; padding: 36px; color: var(--text-muted); font-size: 14px; background: #fff; border: 1px dashed var(--border); border-radius: 12px; }
+
+/* manual */
+.manual-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.manual-header h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+.btn-primary { background: var(--brand); color: #fff; border: none; border-radius: 10px; padding: 9px 18px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s; font-family: inherit; }
+.btn-primary:hover { background: var(--brand-strong); }
+.btn-danger { background: #fff; color: var(--red); border: 1px solid #F0CFCF; border-radius: 8px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: inherit; }
+.btn-edit { background: #fff; color: var(--text-sub); border: 1px solid var(--border); border-radius: 8px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: inherit; }
 .manual-items { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
-.manual-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; align-items: flex-start; gap: 12px; }
-.manual-item-content { flex: 1; }
-.manual-item-title { font-size: 13px; font-weight: 500; color: var(--gold-light); margin-bottom: 4px; }
-.manual-item-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; white-space: pre-wrap; }
+.manual-item { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; display: flex; align-items: flex-start; gap: 12px; }
+.manual-item-content { flex: 1; min-width: 0; }
+.manual-item-title { font-size: 15px; font-weight: 700; color: var(--brand-strong); margin-bottom: 6px; }
+.manual-item-text { font-size: 14px; color: var(--text-sub); line-height: 1.65; white-space: pre-wrap; word-break: keep-all; overflow-wrap: break-word; }
 .manual-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
-.add-form { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
-.add-form h3 { font-size: 14px; color: var(--text); margin-bottom: 14px; }
+.add-form { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+.add-form h3 { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 14px; }
 .form-group { margin-bottom: 12px; }
-.form-group label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; display: block; margin-bottom: 6px; }
-.form-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s; }
-.form-input:focus { border-color: var(--gold-dim); }
-textarea.form-input { min-height: 100px; resize: vertical; }
+.form-group label { font-size: 12px; font-weight: 600; color: var(--text-sub); display: block; margin-bottom: 6px; }
+.form-input { width: 100%; background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; transition: border-color .15s, box-shadow .15s; }
+.form-input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+textarea.form-input { min-height: 120px; resize: vertical; line-height: 1.6; }
 .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
-.btn-cancel { background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; }
+.btn-cancel { background: #fff; color: var(--text-sub); border: 1px solid var(--border); border-radius: 10px; padding: 8px 16px; font-size: 14px; cursor: pointer; font-family: inherit; }
+
+@media (max-width: 640px) {
+  nav { gap: 8px; padding: 0 12px; height: 56px; }
+  .nav-logo p { display: none; }
+  .nav-logo h1 { font-size: 14px; }
+  .nav-tab { padding: 0 9px; font-size: 13px; }
+  #api-bar { padding: 8px 12px; }
+  #api-bar label { display: none; }
+  .welcome { padding-top: 28px; }
+  .welcome h2 { font-size: 22px; }
+  .message { max-width: 94%; }
+  .message.assistant .avatar { width: 34px; height: 34px; }
+  .feedback-row { padding-left: 46px; }
+  .bubble { font-size: 14.5px; }
+}
 </style>
 </head>
 <body>
 <nav>
   <div class="nav-logo">
-    <div class="logo-mark">H</div>
-    <div><h1>Front Desk Training</h1><p>Ibis Styles Ambassador Gangnam</p></div>
+    <div class="ambird"></div>
+    <div><h1><span>FO</span> Assistant</h1><p>ibis Styles Ambassador Seoul Gangnam</p></div>
   </div>
   <div class="nav-tabs">
-    <div class="nav-tab active" onclick="showPage('chat', this)">💬 챗봇</div>
-    <div class="nav-tab" onclick="showPage('stats', this)">📊 통계 & 분석</div>
-    <div class="nav-tab" onclick="showPage('manual', this)">📋 매뉴얼 관리</div>
-  </div>
-  <div class="nav-right">
-    <div class="status-dot"><div class="dot"></div><span>Online</span></div>
+    <div class="nav-tab active" onclick="showPage('chat', this)">챗봇</div>
+    <div class="nav-tab" onclick="showPage('stats', this)">통계</div>
+    <div class="nav-tab" onclick="showPage('manual', this)">매뉴얼 관리</div>
   </div>
 </nav>
 <div id="api-bar">
   <label>API Key</label>
-  <input type="password" id="api-key-input" placeholder="sk-proj-... 여기에 붙여넣으세요" />
+  <input type="password" id="api-key-input" placeholder="OpenAI API 키를 붙여넣으세요 (sk-proj-...)" />
   <button id="save-key-btn">저장</button>
 </div>
 <div id="chat-page" class="page active">
   <div id="chat-area">
     <div class="welcome" id="welcome-msg">
-      <div class="welcome-icon">✦</div>
-      <h2>무엇이든 물어보세요</h2>
-      <p>호텔 프론트 업무에 관한 질문을 한국어 또는 영어로 입력하세요.<br>매뉴얼 기반으로 안내해드립니다.</p>
+      <div class="ambird"></div>
+      <h2><span>FO</span> Assistant Chatbot</h2>
+      <p>프론트 업무, 편하게 물어보세요.<br>줄임말이나 짧은 질문도 괜찮아요. 한국어·영어 모두 가능해요.</p>
       <div class="chips">
-        <div class="chip" onclick="sendChip(this.textContent)">객실 배정 기준이 뭔가요?</div>
-        <div class="chip" onclick="sendChip(this.textContent)">체크인/아웃 시간은?</div>
-        <div class="chip" onclick="sendChip(this.textContent)">주차 요금 어떻게 돼요?</div>
-        <div class="chip" onclick="sendChip(this.textContent)">How do I assign rooms?</div>
+        <div class="chip" onclick="sendChip(this.textContent)">실버 레이트 체크아웃 몇 시까지?</div>
+        <div class="chip" onclick="sendChip(this.textContent)">뱅트 입금 포스팅 어떻게 해?</div>
+        <div class="chip" onclick="sendChip(this.textContent)">포인트 미적립인데 커티시 줘도 돼?</div>
+        <div class="chip" onclick="sendChip(this.textContent)">손님이 이미 결제했다고 해요</div>
+        <div class="chip" onclick="sendChip(this.textContent)">How do I post a bank transfer?</div>
       </div>
     </div>
   </div>
   <div id="input-area">
     <div class="input-wrapper">
-      <textarea id="user-input" placeholder="질문을 입력하세요 / Type your question..." rows="1"></textarea>
+      <textarea id="user-input" placeholder="질문을 입력하세요 · Ask anything" rows="1"></textarea>
       <button id="send-btn" onclick="sendMessage()" disabled>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -268,7 +298,7 @@ const MANUAL_DATA = [
   { id: 79, title: '리워드 포인트 vs 스테이터스 포인트 차이 (고객 안내용)', content: `한 번 숙박하면 두 가지 포인트가 동시에 쌓임. 쉽게 말해 리워드 포인트 = 쓰는 돈, 스테이터스 포인트 = 등급 점수.\n\n리워드 포인트 (Reward points) — 쓰는 돈\n- 다음 숙박비나 호텔 레스토랑·바 이용 금액 결제에 사용 가능 (2,000점 = 약 €40 할인). 항공 마일리지 전환, 기부도 가능\n- 등급이 높을수록 많이 쌓임. 우리 호텔 €10(세금 제외)당 Classic 12.5 / Silver 15.5 / Gold 18.5 / Platinum 22 / Diamond 25점\n- 유효기간 1년. 그 사이 적립이나 사용이 한 번이라도 있으면 다시 1년 연장 → 꾸준히 이용하면 사실상 소멸 안 됨\n\n스테이터스 포인트 (Status points) — 등급 점수\n- 결제에 사용 불가. Silver·Gold 등 등급을 정하는 데만 쓰임\n- 등급 상관없이 똑같이 쌓임. 우리 호텔 €10(세금 제외)당 12.5점\n- 매년 1월 1일 0점으로 초기화. 한 해 동안 모은 점수로 다음 해 등급 결정\n- 숙박일수(Status nights)와 함께 등급을 정함. 둘 중 하나만 기준을 넘으면 됨 (예: Gold = 30박 또는 7,000점)\n\n예시: Gold 손님이 €100(세금 제외) 결제\n- 리워드 185점 → 나중에 결제에 사용\n- 스테이터스 125점 → 등급 유지·상향에만 반영\n\n손님이 자주 헷갈리는 질문과 안내\n- "포인트가 수천 점 있는데 왜 등급이 안 올라가요?" → 리워드 포인트는 등급과 무관. 등급은 스테이터스 포인트나 숙박일수로만 올라감\n- "작년엔 골드였는데 왜 내려갔어요?" → 스테이터스 포인트·숙박일수는 매년 1월 1일 초기화되어 전년도 실적으로 등급이 다시 정해짐. 리워드 포인트는 초기화되지 않음\n- "포인트로 결제했는데 그만큼 적립이 안 됐어요" → 포인트로 결제한 금액은 적립 대상이 아님\n- "부킹닷컴(OTA)으로 예약했는데 왜 안 쌓여요?" → OTA·여행사 예약은 두 포인트 모두 적립되지 않음. 다이렉트 예약만 적립\n- "포인트는 언제 들어와요?" → 체크아웃 후 약 7일 이내, ALL 앱에서 확인 가능\n- "커티시(보상) 포인트로 등급도 올라가나요?" → 커티시 포인트는 리워드 포인트로만 적립되고 스테이터스 포인트·숙박일수는 쌓이지 않음\n- "숙박 포인트가 안 들어왔어요" → 절대 커티시 포인트로 대신 주지 말 것. 고객에게 all.accor.com/ALL 앱에서 리트로클레임 신청을 안내하거나, ACDC 수동 적립 또는 Welcome Now 티켓으로 정식 처리 ('ALL 포인트 적립 이슈 처리' 항목 참고)` }
 ];
 
-let manualItems = JSON.parse(localStorage.getItem('hotel_manual_v7') || 'null') || MANUAL_DATA;
+let manualItems = JSON.parse(localStorage.getItem('hotel_manual_v8') || 'null') || MANUAL_DATA;
 let logs = JSON.parse(localStorage.getItem('hotel_logs') || '[]');
 let apiKey = localStorage.getItem('openai_api_key') || '';
 let conversationHistory = [];
@@ -301,7 +331,7 @@ function showPage(name, el) {
   if (name === 'manual') renderManual();
 }
 
-function saveManualData() { localStorage.setItem('hotel_manual_v7', JSON.stringify(manualItems)); }
+function saveManualData() { localStorage.setItem('hotel_manual_v8', JSON.stringify(manualItems)); }
 
 function renderManual() {
   const container = document.getElementById('manual-items');
@@ -370,17 +400,147 @@ function renderStats() {
     unLogs.map(l => `<div class="u-item"><div class="u-dot"></div>${l.question}</div>`).join('');
 }
 
-function buildSystemPrompt() {
-  const manual = manualItems.map(item => `[${item.title}]\n${item.content}`).join('\n\n');
-  return `당신은 호텔 프론트 데스크 신입 직원을 위한 교육 어시스턴트입니다.
-이 챗봇의 사용자는 호텔 프론트 직원입니다. 절대로 "프론트 데스크에 문의하세요", "프론트에 연락하세요", "프론트에 요청하세요" 같은 답변을 하지 마세요. 프론트 직원이 직접 처리하거나 시설팀, 하우스키핑, 선임 직원 등 해당 부서에 연락하도록 안내하세요.
-아래 매뉴얼을 기반으로 정확하고 친절하게 답변하세요.
-한국어로 질문하면 한국어로, 영어로 질문하면 영어로 답변하세요.
-질문이 특정 상황이나 시나리오 형태로 오더라도 반드시 매뉴얼에서 관련 내용을 찾아 답변하세요.
-매뉴얼에 없는 내용은 정확히 "UNANSWERED:"로 시작한 후 "매뉴얼에 해당 내용이 없습니다. 선임 직원에게 문의해 주세요."라고 안내하세요.
+// ===== 현장 용어·줄임말 사전 (질문 해석 + 관련 항목 찾기에 사용) =====
+const GLOSSARY = [
+  ['뱅트', '뱅크트랜스퍼', 'bank transfer', '입금', '계좌이체', '입금증', '무통장'],
+  ['레체', '레이트체크아웃', '레이트 체크아웃', 'late check out', 'late checkout', 'lco', '늦은 체크아웃', '퇴실 연장', '체크아웃 연장'],
+  ['얼체', '얼리체크인', '얼리 체크인', 'early check in', 'eci', '일찍 체크인', '빠른 입실'],
+  ['디파짓', 'deposit', '선수금', '선결제', '보증금', 'dp', '룸디파짓', 'room deposit'],
+  ['커티지', '커티시', 'courtesy', '보상 포인트', '커테시'],
+  ['레트로클레임', '리트로클레임', 'retro claim', 'retroclaim', '미적립', '포인트 누락', 'report missing points', '적립 안됨', '적립이 안'],
+  ['스위트나잇', '스윗나잇', 'suite night upgrade', 'snu', '스위트 업그레이드'],
+  ['번포인트', 'bwp', 'booking with points', 'burn', 'b4s', 'burn4stay', '포인트 사용', '포인트 결제', '포인트로 결제'],
+  ['스테이터스', 'status point', 'status', '등급 포인트', '스테이터스 포인트'],
+  ['리워드', 'reward point', '리워드 포인트', '포인트'],
+  ['웰드', '웰컴드링크', '웰컴 드링크', 'welcome drink', '음료 쿠폰', '드링크 바우처'],
+  ['웰컴푸드', '웰컴 어메니티', 'welcome amenity'],
+  ['플래', '플레', '플래티넘', 'platinum'], ['다이아', '다이아몬드', 'diamond'], ['골드', 'gold'], ['실버', 'silver'], ['클래식', 'classic'],
+  ['익스플로러', 'explorer', '아코르플러스', '아코르 플러스', 'accor plus', 'accor+', '유료 멤버십', '유료멤버십'],
+  ['숙박권', 'daf', '스테이플러스', 'stay plus', '무료숙박'],
+  ['올닷컴', 'all.com', 'all accor', '아코르', 'accor', '멤버십', '회원', '로열티', 'loyalty'],
+  ['웰컴나우', 'welcome now', 'hhd', '헬프데스크', '티켓'],
+  ['acdc', '에이씨디씨', '고객카드'],
+  ['오페라', 'opera', 'pms', '오페라클라우드'],
+  ['노포', '노포스트', 'no post'],
+  ['라우팅', 'routing', '라우트'],
+  ['인벤', '인벤토리', '재고', '잔여객실', '잔여 객실', 'availability'],
+  ['pm방', '피엠방', '하우스포스팅', 'house posting'],
+  ['oo설정', 'os설정', '아웃오브오더', '아웃오브서비스', 'out of order', 'out of service', '판매불가'],
+  ['워크인', 'walk in', 'walkin', '현장예약'],
+  ['룸무브', '룸체인지', '객실 변경', '방 바꿔', '방 변경', 'room move', 'room change'],
+  ['엑베', '엑스트라베드', '엑스트라 베드', 'extra bed', '추가 침대'],
+  ['베이비크립', '아기침대', '침대가드', 'crib'],
+  ['레지카드', '레지 카드', '숙박자 카드', 'registration card'],
+  ['인차지', '부차지', '선임', '매니저', 'mod', '당직'],
+  ['노쇼', 'no show', '노 쇼'],
+  ['시재', '마감', '클로징', 'cashier closure', '나이트 오딧'],
+  ['환전', 'currency exchange', '외화'],
+  ['모노', '모노플렉스', '시네마', '영화관', 'monoplex', '영화'],
+  ['짐', '헬스장', '헬스', '피트니스', 'gym', 'fitness'],
+  ['코인세탁', '코인 런드리', '빨래', '세탁실', 'laundry', '세탁'],
+  ['씨유', 'cu편의점', '편의점'],
+  ['미팅룸', '회의실', '대관', 'pdr', 'cube', 'avenue', 'nexus'],
+  ['와이파이', '와파', 'wifi', 'wi-fi', '인터넷'],
+  ['주차', 'parking', '주차장', '파킹'],
+  ['조식', '아침', 'breakfast', '프레쉬', '레스토랑'],
+  ['카드키', '룸키', '키 분실', '키분실', '키 발급', 'room key'],
+  ['환불', 'refund', '취소'],
+  ['이미 결제', '돈냈', '돈 냈', '결제했', '결제 했', '결제됐', '결제 됐', 'paid', '결제내역', '결제 내역', '이중결제', '중복결제'],
+  ['엘베', '엘리베이터', '승강기', 'elevator', '갇혔', '갇힘', '갇혓'],
+  ['업글', '업그레이드', 'upgrade', '상위 객실', '상급 객실'],
+  ['공항', '리무진', '공항버스', 'airport', '6703'],
+  ['vcc', '여행사', 'ota', '익스피디아', '부킹닷컴', '아고다', '트립닷컴', '씨트립', '야놀자', '여기어때'],
+  ['커피머신', '아길라', 'aguila', '네스프레소', '커피'],
+  ['did', '사이니지', '모니터 화면', '스마트사인'],
+  ['컴플레인', '불만', '항의', 'complaint', '클레임'],
+  ['화재', '불났', '대피', 'fire'], ['테러', '폭발물', '수상한 물건', '협박'],
+  ['분실물', 'l&f', '로스트앤파운드', '잃어버', '분실'],
+];
 
-=== 호텔 운영 매뉴얼 ===
-${manual}`;
+function normText(s) { return (s || '').toLowerCase().replace(/\s+/g, ' '); }
+function expandQuery(q) {
+  const n = normText(q); const nNoSpace = n.replace(/\s/g, '');
+  const extra = [];
+  GLOSSARY.forEach(group => {
+    if (group.some(t => n.includes(t) || nNoSpace.includes(t.replace(/\s/g, '')))) extra.push(group.join(' '));
+  });
+  return n + ' ' + extra.join(' ');
+}
+function bigramSet(s) {
+  const t = normText(s).replace(/[^0-9a-z가-힣]/g, '');
+  const set = new Set(); for (let i = 0; i < t.length - 1; i++) set.add(t.slice(i, i + 2)); return set;
+}
+const itemBigramCache = new Map();
+function itemBigrams(item) {
+  const key = item.id + '|' + item.title.length + '|' + item.content.length;
+  if (!itemBigramCache.has(key)) itemBigramCache.set(key, { title: bigramSet(item.title), all: bigramSet(item.title + ' ' + item.content) });
+  return itemBigramCache.get(key);
+}
+// 질문과 관련도가 높은 매뉴얼 항목 찾기 (조사·띄어쓰기·오타에 강한 2글자 단위 비교)
+function matchedGroups(q) {
+  const n = normText(q), nn = n.replace(/\s/g, '');
+  return GLOSSARY.filter(group => group.some(t => n.includes(t) || nn.includes(t.replace(/\s/g, ''))));
+}
+function findRelevantItems(query, limit) {
+  const q = bigramSet(query); const groups = matchedGroups(query);
+  if (q.size === 0 && groups.length === 0) return [];
+  const scored = manualItems.map(item => {
+    const b = itemBigrams(item); let hitAll = 0, hitTitle = 0;
+    q.forEach(g => { if (b.all.has(g)) hitAll++; if (b.title.has(g)) hitTitle++; });
+    const title = normText(item.title).replace(/\s/g, ''), body = normText(item.content).replace(/\s/g, '');
+    let groupScore = 0;
+    groups.forEach(group => {
+      const terms = group.map(t => t.replace(/\s/g, ''));
+      if (terms.some(t => title.includes(t))) groupScore += 1.5;
+      else if (terms.some(t => body.includes(t))) groupScore += 1;
+    });
+    const cov = q.size ? (hitAll + 1.5 * hitTitle) / q.size : 0;
+    return { item, score: cov + (groups.length ? groupScore / groups.length : 0) };
+  }).filter(s => s.score > 0.3).sort((a, b) => b.score - a.score);
+  return scored.slice(0, limit).map(s => s.item);
+}
+
+function buildSystemPrompt(query) {
+  const manual = manualItems.map(item => `[${item.title}]\n${item.content}`).join('\n\n');
+  const relevant = findRelevantItems(query || '', 8);
+  const relevantText = relevant.length ? relevant.map(item => `[${item.title}]\n${item.content}`).join('\n\n') : '(자동으로 찾은 항목 없음 — 전체 매뉴얼에서 직접 찾을 것)';
+  const glossaryText = GLOSSARY.map(g => g.join(' = ')).join('\n');
+  return `당신은 이비스 스타일 앰배서더 서울 강남 프론트 데스크의 든든한 사수 역할을 하는 교육 어시스턴트입니다.
+사용자는 프론트 직원(주로 신입)입니다. 바쁜 현장에서 급하게 묻기 때문에 질문이 짧거나, 줄임말·현장 은어·오타·맞춤법 실수·조사 생략이 많습니다.
+
+[질문 해석 원칙]
+- 단어가 매뉴얼과 정확히 일치하지 않아도 질문의 의도를 파악해서 답하세요. 아래 용어 사전의 같은 줄에 있는 말들은 같은 뜻입니다.
+- 질문이 애매하면 가장 가능성 높은 의도로 먼저 답하고, 다른 의미일 수 있으면 마지막에 짧게 되물으세요. 의도를 몰라서 아무것도 안 알려주는 것보다 훨씬 낫습니다.
+- 상황·시나리오형 질문은 관련된 여러 매뉴얼 항목을 조합해서 실제로 무엇을 어떤 순서로 하면 되는지 답하세요.
+- 이전 대화의 맥락을 이어서 해석하세요. (예: "그럼 실버는?"은 직전 주제를 실버 등급에 적용한 질문)
+
+[답변 방식] 사수가 옆에서 설명해 주듯 친절하고 구체적으로:
+1. 핵심 답(결론)을 먼저 한두 줄로
+2. 필요한 경우 단계별 처리 절차
+3. 매뉴얼에 적힌 목적, 주의사항(⚠️), 자주 하는 실수, 금지사항이 있으면 빠짐없이 짚어주기
+4. 같이 알아두면 좋은 관련 내용이 매뉴얼의 다른 항목에 있으면 짧게 덧붙이기
+5. 답변 맨 마지막 줄에 근거로 사용한 매뉴얼 항목 제목을 "📌 참고 항목: [제목], [제목]" 형식으로 반드시 표시
+- 단순한 사실 질문(시간, 위치 등)은 짧게 답해도 됩니다.
+- 한국어 질문은 한국어로, 영어 질문은 영어로 답하세요.
+- 마크다운은 **굵게**와 "- " 목록 정도만 사용하세요.
+
+[정확성 원칙 — 가장 중요]
+- 답변의 모든 내용은 아래 매뉴얼에 근거해야 합니다. 매뉴얼에 없는 절차, 요금, 시간, 코드, 기준, 규정, 혜택, 연락처를 일반 상식이나 다른 호텔 사례로 추측해서 채우지 마세요.
+- "보통 호텔에서는~", "일반적으로~" 같은 매뉴얼 밖의 설명을 덧붙이지 마세요.
+- 질문을 너그럽게 해석하는 것(줄임말·오타·은어 이해)은 허용되지만, 답의 내용은 반드시 매뉴얼에서 가져오세요.
+- 여러 항목을 조합해 답하는 것은 좋지만, 매뉴얼에 없는 연결이나 결론을 만들어내지 마세요.
+- 매뉴얼에 일부만 있으면 있는 부분까지 답하고, 없는 부분은 "이 부분은 매뉴얼에 없으니 선임에게 확인하세요"라고 덧붙이세요.
+- 매뉴얼에 관련 내용이 정말 전혀 없을 때만 답변을 정확히 "UNANSWERED:"로 시작하고 "매뉴얼에 해당 내용이 없습니다. 선임 직원에게 문의해 주세요."라고 안내하세요. 관련 내용이 조금이라도 있으면 UNANSWERED를 쓰지 마세요.
+- 사용자는 프론트 직원입니다. "프론트 데스크에 문의하세요" 같은 답은 절대 하지 말고, 직원이 직접 처리하거나 시설팀·하우스키핑·선임 등 해당 부서에 연락하도록 안내하세요.
+
+=== 현장 용어 사전 (같은 줄 = 같은 뜻) ===
+${glossaryText}
+
+=== 호텔 운영 매뉴얼 (전체) ===
+${manual}
+
+=== 이번 질문과 특히 관련 있어 보이는 항목 (우선 참고, 단 여기에 없으면 전체 매뉴얼에서 찾을 것) ===
+${relevantText}`;
 }
 
 function hideWelcome() { const w = document.getElementById('welcome-msg'); if (w) w.style.display = 'none'; }
@@ -388,20 +548,24 @@ function hideWelcome() { const w = document.getElementById('welcome-msg'); if (w
 function appendMessage(role, content, questionForLog) {
   hideWelcome();
   const msg = document.createElement('div'); msg.className = `message ${role}`;
-  const avatar = document.createElement('div'); avatar.className = 'avatar'; avatar.textContent = role === 'user' ? 'U' : '✦';
+  const avatar = document.createElement('div'); avatar.className = 'avatar ambird';
+  const body = document.createElement('div'); body.className = 'msg-body';
   const bubble = document.createElement('div'); bubble.className = 'bubble';
   const isUnanswered = content.startsWith('UNANSWERED:');
   const displayContent = isUnanswered ? content.replace('UNANSWERED:', '').trim() : content;
-  bubble.innerHTML = formatText(displayContent);
-  msg.appendChild(avatar); msg.appendChild(bubble); chatArea.appendChild(msg);
+  if (role === 'user') { bubble.textContent = displayContent; }
+  else { bubble.innerHTML = formatText(displayContent); const name = document.createElement('div'); name.className = 'sender'; name.textContent = '앰버드'; body.appendChild(name); }
+  body.appendChild(bubble);
+  if (role === 'assistant') msg.appendChild(avatar);
+  msg.appendChild(body); chatArea.appendChild(msg);
   if (role === 'assistant') {
     const logEntry = { question: questionForLog, feedback: null, unanswered: isUnanswered, time: Date.now() };
     logs.push(logEntry); localStorage.setItem('hotel_logs', JSON.stringify(logs));
     const logIndex = logs.length - 1;
     const fbRow = document.createElement('div'); fbRow.className = 'feedback-row';
-    fbRow.innerHTML = `<span style="font-size:11px;color:var(--text-muted);line-height:2">도움이 됐나요?</span>
-      <button class="fb-btn" onclick="giveFeedback(${logIndex}, 'helpful', this)">👍 도움됐어요</button>
-      <button class="fb-btn" onclick="giveFeedback(${logIndex}, 'unhelpful', this)">👎 이해 안 돼요</button>`;
+    fbRow.innerHTML = `<span>도움이 됐나요?</span>
+      <button class="fb-btn" onclick="giveFeedback(${logIndex}, 'helpful', this)">도움됐어요</button>
+      <button class="fb-btn" onclick="giveFeedback(${logIndex}, 'unhelpful', this)">이해 안 돼요</button>`;
     chatArea.appendChild(fbRow);
   }
   chatArea.scrollTop = chatArea.scrollHeight;
@@ -409,22 +573,68 @@ function appendMessage(role, content, questionForLog) {
 
 function giveFeedback(index, type, btn) {
   logs[index].feedback = type; localStorage.setItem('hotel_logs', JSON.stringify(logs));
-  btn.parentElement.innerHTML = type === 'helpful' ? '<span style="font-size:11px;color:var(--green)">👍 피드백 감사해요!</span>' : '<span style="font-size:11px;color:var(--red)">👎 매뉴얼 개선에 활용됩니다.</span>';
+  btn.parentElement.innerHTML = type === 'helpful' ? '<span style="color:var(--green)">피드백 감사해요!</span>' : '<span style="color:var(--red)">매뉴얼 개선에 활용할게요.</span>';
 }
 
 function appendTyping() {
   hideWelcome();
   const msg = document.createElement('div'); msg.className = 'message assistant'; msg.id = 'typing-indicator';
-  const avatar = document.createElement('div'); avatar.className = 'avatar'; avatar.textContent = '✦';
+  const avatar = document.createElement('div'); avatar.className = 'avatar ambird';
+  const body = document.createElement('div'); body.className = 'msg-body';
+  const name = document.createElement('div'); name.className = 'sender'; name.textContent = '앰버드';
   const bubble = document.createElement('div'); bubble.className = 'bubble';
   bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
-  msg.appendChild(avatar); msg.appendChild(bubble); chatArea.appendChild(msg); chatArea.scrollTop = chatArea.scrollHeight;
+  body.appendChild(name); body.appendChild(bubble);
+  msg.appendChild(avatar); msg.appendChild(body); chatArea.appendChild(msg); chatArea.scrollTop = chatArea.scrollHeight;
 }
 
 function removeTyping() { const t = document.getElementById('typing-indicator'); if (t) t.remove(); }
 
+function escapeHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 function formatText(text) {
-  return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/^- (.+)/gm, '<li>$1</li>').replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>').replace(/\n/g, '<br>');
+  let source = '';
+  const m = text.match(/\n?📌\s*참고 항목[:：]?\s*(.+)\s*$/);
+  if (m) { source = m[1].trim(); text = text.slice(0, m.index); }
+  const inline = t => escapeHtml(t).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  const out = []; let inList = false;
+  text.trim().split('\n').forEach(line => {
+    const li = line.match(/^\s*[-•*]\s+(.+)/);
+    const hd = line.match(/^\s*#{1,4}\s*(.+)$/);
+    if (li) { if (!inList) { out.push('<ul>'); inList = true; } out.push('<li>' + inline(li[1]) + '</li>'); return; }
+    if (inList) { out.push('</ul>'); inList = false; }
+    if (hd) out.push('<strong>' + inline(hd[1]) + '</strong><br>');
+    else if (line.trim() === '') out.push('<br>');
+    else out.push(inline(line) + '<br>');
+  });
+  if (inList) out.push('</ul>');
+  let html = out.join('').replace(/(<br>)+$/, '').replace(/<br><ul>/g, '<ul>').replace(/<\/ul>(<br>)+/g, '</ul>').replace(/(<br>){3,}/g, '<br><br>');
+  if (source) html += `<span class="source">📌 참고 항목: ${escapeHtml(source)}</span>`;
+  return html;
+}
+
+const MODEL = 'gpt-4o-mini';
+const MAX_HISTORY_MESSAGES = 8; // 최근 4턴만 맥락으로 전송 (비용·정확도 관리)
+
+async function callOpenAI(messages) {
+  let lastErr;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+        body: JSON.stringify({ model: MODEL, messages, max_tokens: 1500, temperature: 0.3 })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok) return data.choices[0].message.content;
+      lastErr = new Error(data.error?.message || '오류가 발생했습니다.');
+      if (response.status === 401 || response.status === 400) throw lastErr; // 키 오류 등은 재시도 안 함
+    } catch (err) {
+      lastErr = err;
+      if (err.message && (err.message.includes('Incorrect API key') || err.message.includes('invalid'))) throw err;
+    }
+    await new Promise(r => setTimeout(r, 800 * (attempt + 1)));
+  }
+  if (lastErr && lastErr.message === 'Failed to fetch') throw new Error('연결이 잠시 불안정해요. 같은 질문을 다시 보내주세요.');
+  throw lastErr;
 }
 
 async function sendMessage() {
@@ -432,13 +642,9 @@ async function sendMessage() {
   isLoading = true; sendBtn.disabled = true; userInput.value = ''; userInput.style.height = 'auto';
   appendMessage('user', text); conversationHistory.push({ role: 'user', content: text }); appendTyping();
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-      body: JSON.stringify({ model: 'gpt-4o-mini', messages: [{ role: 'system', content: buildSystemPrompt() }, ...conversationHistory], max_tokens: 1000, temperature: 0.2 })
-    });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error?.message || '오류가 발생했습니다.');
-    const reply = data.choices[0].message.content;
+    const recent = conversationHistory.slice(-MAX_HISTORY_MESSAGES);
+    const prevUser = conversationHistory.filter(m => m.role === 'user').slice(-2, -1).map(m => m.content).join(' ');
+    const reply = await callOpenAI([{ role: 'system', content: buildSystemPrompt(text + ' ' + prevUser) }, ...recent]);
     conversationHistory.push({ role: 'assistant', content: reply });
     removeTyping(); appendMessage('assistant', reply, text);
   } catch (err) {
